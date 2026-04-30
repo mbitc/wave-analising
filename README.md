@@ -1,0 +1,2 @@
+# wave-analising
+mathematic model
