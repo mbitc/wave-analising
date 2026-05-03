@@ -1,164 +1,219 @@
-# Banga erdvėje — vizualinis nelinijinės bangos modelis
+# 🌊 Bangos analizė — erdvėlaikio lauko vizualizacija
 
-## Aprašymas
+Interaktyvi 1D kompleksinio bangos lauko vizualizacija, rodanti, kaip sistema evoliucionuoja erdvėje ir laike veikiama nelinijinių bei disipatyvių procesų.
 
-Šis projektas yra interaktyvi vizualizacija, skirta analizuoti vienmačių kompleksinių bangų dinamiką erdvėje ir laike. Modelis remiasi nelinijine Schrödinger tipo lygtimi su papildomais energijos įvedimo (gain) ir slopinimo (loss) nariais.
-
-Sistema leidžia realiu laiku stebėti, kaip bangos forma evoliucionuoja priklausomai nuo fizinių parametrų ir pradinių sąlygų.
+🔗 Demo: https://mbitc.github.io/wave-analising/
 
 ---
 
-## Matematinis modelis
+## 🧠 Modelio esmė
 
-Naudojama lygtis:
+Modelis paremtas apibendrinta nelinijine Schrödinger tipo lygtimi su energijos įvedimu ir prisotinimu:
 
-i∂ₜψ = −α∂²ₓψ − g|ψ|²ψ + V(x)ψ + i(γ − β|ψ|²)ψ
+[
+i \partial_t \psi = -\alpha \partial_x^2 \psi - g |\psi|^2 \psi + V(x)\psi + i(\gamma - \beta |\psi|^2)\psi
+]
 
-Kur:
+### Kintamieji
 
-* ψ(x,t) — kompleksinis bangos laukas
-* α — dispersijos koeficientas
-* g — nelinijiškumas
-* V(x) — išorinis potencialas
-* γ — energijos įvedimas (gain)
-* β — prisotinantis slopinimas (saturating loss)
+* **ψ(x,t)** — kompleksinis bangos laukas
+* **α** — dispersijos koeficientas
+* **g** — nelinijiškumas
+* **V(x)** — išorinis potencialas
+* **γ** — energijos įvedimas (gain)
+* **β** — prisotinantis slopinimas (loss)
 
----
+📌 Sistema nėra konservatyvi:
 
-## Vizualizacijos struktūra
-
-Vizualizacija suskirstyta į tris pagrindinius laukus (spacetime reprezentacija):
-
-1. **|ψ(x,t)|**
-
-   * Bangos amplitudė
-   * Parodo struktūrų formavimąsi ir lokalizaciją
-
-2. **Re[ψ(x,t)]**
-
-   * Realioji dalis
-   * Naudinga fazinių struktūrų stebėjimui (bet nėra pati fazė)
-
-3. **j(x,t)**
-
-   * Srautas: j = 2α·Im(ψ*∂ₓψ)
-   * Rodo „judėjimo kryptį“ ir intensyvumą
-
-Laikas vaizduojamas horizontalia kryptimi:
-
-* Dešinė — dabartis
-* Kairė — praeitis
+* energija gali augti
+* gali stabilizuotis
+* gali formuoti struktūras arba chaotiškai elgtis
 
 ---
 
-## Funkcionalumas
+## 📊 Kas vizualizuojama
+
+Rodomi trys laukai erdvėlaikio (spacetime) reprezentacijoje:
+
+### 1. Amplitudė
+
+[
+|\psi(x,t)|
+]
+Rodo bangos intensyvumą / energijos tankį.
+
+---
+
+### 2. Realioji dalis
+
+[
+\text{Re}[\psi(x,t)]
+]
+Parodo bangos struktūrą (⚠️ tai nėra fazė).
+
+---
+
+### 3. Srautas
+
+[
+j(x,t) = 2\alpha \cdot \text{Im}(\psi^* \partial_x \psi)
+]
+
+Rodo bangos „judėjimo kryptį“ ir intensyvumą.
+
+---
+
+## 🕒 Erdvelaikio vaizdavimas
+
+* **Horizontaliai (X):** laikas
+
+  * dešinė → dabartis
+  * kairė → praeitis
+
+* **Vertikaliai (Y):** erdvė (x)
+
+Kiekvienas naujas žingsnis įrašomas kaip nauja kolona → susidaro istorija.
+
+---
+
+## ⚙️ Skaitinis metodas
+
+* Baigtinių skirtumų metodas (erdvei)
+* **RK4 (Runge–Kutta 4 eilės metodas)** laikui
+* Periodinės ribinės sąlygos
+* Tinklelis: `N = 512`
+
+### Stabilumo pastabos
+
+* Didelis **g** → stiprūs nelinijiniai efektai
+* Didelis **γ** → eksponentinis augimas
+* **β > 0** → stabilizuoja sistemą
+
+---
+
+## 🎛 Valdymas
 
 ### Pradinės sąlygos
 
-* **Gaussas** — lokalizuotas bangos paketas
-* **Du paketai** — priešpriešinės bangos
+* **Gaussas** — lokalizuotas paketas
+* **Du paketai** — sąveikaujančios bangos
 * **Triukšmas** — atsitiktinė būsena
-* **Tuščia + gain** — silpnas triukšmas su galimu augimu
+* **Tuščia + gain** — nestabilumo augimas iš triukšmo
 
 ---
 
 ### Fizikiniai parametrai
 
-* **g (nelinijiškumas)**
-  Kontroliuoja savitarpio sąveiką tarp bangos komponentų
-
-* **α (dispersija)**
-  Atsakinga už bangos išsisklaidymą
-
-* **γ (gain)**
-  Energijos įvedimas į sistemą
-
-* **β (loss)**
-  Stabilizuoja augimą per prisotinimą
-
-* **V₀ (potencialas)**
-  Sukuria lokalizuotą lauką erdvėje
+| Parametras | Reikšmė                  |
+| ---------- | ------------------------ |
+| g          | nelinijiškumo stiprumas  |
+| α          | dispersija               |
+| γ          | energijos įvedimas       |
+| β          | prisotinantis slopinimas |
+| V₀         | potencialo stiprumas     |
 
 ---
 
-### Vizualiniai nustatymai
+### Vizualizacija
 
-* Keli spalvų žemėlapiai (plasma, viridis, inferno, diverging, ice)
-* Istorijos gylis (trail length)
-* Real-time atnaujinimas
+* Spalvų žemėlapiai:
 
----
-
-## Skaitinis metodas
-
-Naudojamas:
-
-* **RK4 (Runge–Kutta 4-os eilės metodas)** laiko integracijai
-* **Baigtinių skirtumų metodas** erdviniams išvestiniams
-* **Periodinės ribinės sąlygos**
+  * plasma
+  * viridis
+  * inferno
+  * diverging (pasirašytiems laukams)
+* Reguliuojamas istorijos ilgis
 
 ---
 
-## Interpretacijos pastabos
+## 📈 Stebimi dydžiai
 
-Svarbu suprasti:
+* **Norma**
+  [
+  \int |\psi|^2 dx
+  ]
 
-* Sistema yra **ne konservatyvi** (dėl γ ir β)
-* Energija gali:
+* **Maksimali amplitudė**
 
-  * atsirasti (gain)
-  * išnykti (loss)
+* **Bendras srautas**
+  [
+  \int |j(x)| dx
+  ]
 
-Todėl:
-
-* srautas j(x,t) nėra tiesiogiai konservacijos rodiklis
-* normos ∫|ψ|²dx dinamika gali keistis
-
----
-
-## Galimi reiškiniai
-
-Su tinkamais parametrais galima stebėti:
-
-* Solitonų formavimąsi
-* Disipacinius darinius
-* Bangų interferenciją
-* Chaotišką dinamiką
-* Nestabilumų augimą iš triukšmo
+* **Laikas t**
 
 ---
 
-## Apribojimai
+## 🔍 Interpretacija
 
-* Modelis yra 1D
-* Vizualizacija naudoja dinaminę normalizaciją (gali iškraipyti amplitudės suvokimą)
-* Fazė nėra tiesiogiai atvaizduojama
+Galimi reiškiniai:
+
+### Nelinijiniai efektai
+
+* savikoncentracija
+* lokalizuotos struktūros (solitonų tipo)
+* kolapsas
+
+### Gain / Loss dinamika
+
+* augimas (γ > 0)
+* stabilizacija per β
+
+### Transportas
+
+* kryptinis judėjimas (j)
+* interferencijos
 
 ---
 
-## Tolimesnės plėtros kryptys
+## ⚠️ Apribojimai
 
-Galimi patobulinimai:
+* 1D modelis
+* Nenaudojamas FFT (dispersija aproksimuota)
+* Fiksuotas laiko žingsnis
+* Dinaminė spalvų normalizacija gali iškraipyti amplitudės suvokimą
+* Fazė nėra tiesiogiai rodoma
+
+---
+
+## 🚧 Tolimesnė plėtra
 
 * Fazės (arg ψ) vizualizacija
-* Fourier analizė (spektro stebėjimas)
-* Energijos / Hamiltoniano skaičiavimas
-* 2D versija
-* Stabilumo analizės įrankiai
+* Spektrinė analizė (FFT)
+* Energijos funkcionalas
+* 2D modelis
+* Eksportas / įrašymas
 
 ---
 
-## Tikslas
+## 🧩 Kontekstas
 
-Šis projektas nėra tik vizualizacija — tai eksperimentinė platforma:
+Modelis artimas:
 
-* intuicijai apie nelinijines sistemas lavinti
-* dinamikos tyrimui
-* hipotezių testavimui prieš rimtesnį modeliavimą
+* nelinijinei Schrödinger lygčiai (NLS)
+* Ginzburg–Landau tipo sistemoms
+* disipatyvioms bangoms
+
+Naudingas tyrinėti:
+
+* struktūrų formavimąsi
+* nestabilumus
+* emergentinį elgesį
 
 ---
 
-## Pastaba
+## 📦 Technologijos
 
-Modelio interpretacija priklauso nuo parametrų.
-Vizualiai panašūs rezultatai gali turėti skirtingą fizinę prasmę.
+* Vanilla JavaScript
+* HTML5 Canvas
+* Be išorinių bibliotekų
+
+---
+
+## 🧠 Esmė
+
+Tai ne tik vizualizacija.
+
+Tai įrankis stebėti, kaip iš paprastos lygties atsiranda sudėtingas elgesys:
+
+> struktūra kyla iš dispersijos, nelinijiškumo ir energijos srauto sąveikos
